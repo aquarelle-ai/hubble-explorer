@@ -1,0 +1,15 @@
+<div class="block-detail" *ngIf="fullBlock">
+
+  <h3>Block:  # {{ fullBlock.height }}</h3>
+  <h4>{{ fullBlock.hash }}</h4>
+  <p><a href="#" (click)="moveToPrevious ($event, fullBlock)">Previous block</a> </p>
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let evidence of fullBlock.evidence">
+        <td>{{ evidence.name }}</td>
+        <td>{{ evidence.volume }}</td>
+        <td>{{ evidence.dataUrl }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

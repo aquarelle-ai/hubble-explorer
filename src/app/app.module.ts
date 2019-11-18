@@ -2,15 +2,34 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { ChainListenerService } from './services/chain-listener.service';
+import { MainWindowManagerComponent } from './main-window-manager/main-window-manager.component';
+import { TopBarComponent } from './top-bar/top-bar.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
+import { FooterComponent } from './footer/footer.component';
+import { RecentBlocksComponent } from './recent-blocks/recent-blocks.component';
+import { OrderBlockByPipe } from './order-block-by.pipe';
+import { BlockDetailComponent } from './block-detail/block-detail.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MainWindowManagerComponent,
+    TopBarComponent,
+    SearchBarComponent,
+    FooterComponent,
+    RecentBlocksComponent,
+    OrderBlockByPipe,
+    BlockDetailComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    ChainListenerService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
