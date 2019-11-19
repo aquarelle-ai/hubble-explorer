@@ -25,11 +25,13 @@
             "styles": [
               "src/styles.css",
               "src/assets/css/bootstrap.min.css",
-              "src/assets/fontawesome-5.11.2/css/all.min.css"
+              "src/assets/fontawesome-5.11.2/css/all.min.css",
+              "node_modules/chartist/dist/chartist.min.css"
             ],
             "scripts": [
               "src/assets/fontawesome-5.11.2/js/all.min.js",
-              "node_modules/moment/min/moment-with-locales.min.js"
+              "node_modules/moment/min/moment-with-locales.min.js",
+              "node_modules/chartist/dist/chartist.min.js"
             ]
           },
           "configurations": {

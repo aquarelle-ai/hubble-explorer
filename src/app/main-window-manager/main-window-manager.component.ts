@@ -10,6 +10,7 @@ export class MainWindowManagerComponent implements OnInit {
 
   
   currentBlock: BlockItem;
+  blockList: BlockItem[];
 
   constructor() { }
 
@@ -18,6 +19,10 @@ export class MainWindowManagerComponent implements OnInit {
 
   changeCurrentBlock(newBlock : BlockItem) {
     this.currentBlock = newBlock;
+  }
+
+  getNewBlockList(newBlockList : BlockItem[]) {
+    this.blockList = newBlockList;
   }
 
 }

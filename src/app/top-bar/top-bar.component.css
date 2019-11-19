@@ -1,11 +1,16 @@
 .top-bar {
     font-size: 1em;
     display: block;
-    height: 40px;
+    height: 2.5rem;
     grid-template-columns: repeat(2,1fr);
-    padding: 10px;
     background-color: #282828;
+    line-height: 2.5rem;
+    padding-left: 1rem;
+}
+
+.top-bar .follow {
     text-align: right;
+    float: right;
 }
 
 .top-bar ul {
@@ -17,4 +22,21 @@
 
 .top-bar ul > li {
     margin-left: 10px;
+}
+
+.top-bar h1 {
+    font-size: 1.2rem;
+    display: inline-block;
+    text-align: left;
+}
+
+.top-bar h1 > .emphasis {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: #7a29a3;
+    font-weight: bold;
+    padding: 3px;
+    margin-left: 10px;
+    border-radius: 5px;
+    background-color: #fff;
 }

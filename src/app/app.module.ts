@@ -11,6 +11,7 @@ import { RecentBlocksComponent } from './recent-blocks/recent-blocks.component';
 import { OrderBlockByPipe } from './order-block-by.pipe';
 import { BlockDetailComponent } from './block-detail/block-detail.component';
 import { HttpClientModule } from '@angular/common/http';
+import { PriceChartComponent } from './price-chart/price-chart.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { HttpClientModule } from '@angular/common/http';
     FooterComponent,
     RecentBlocksComponent,
     OrderBlockByPipe,
-    BlockDetailComponent
+    BlockDetailComponent,
+    PriceChartComponent
   ],
   imports: [
     BrowserModule,

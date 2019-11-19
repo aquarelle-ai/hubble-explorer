@@ -4,5 +4,6 @@ export class BlockItem {
     public nodeAddress: string;
     public timestamp: number;
     public priceIndex: number;
+    public confirmations: number;
 
 }

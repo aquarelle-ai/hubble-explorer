@@ -14,6 +14,7 @@ declare const moment: any;
 export class RecentBlocksComponent implements OnInit {
 
   @Output() clickNode = new EventEmitter<BlockItem>();
+  @Output() refresh = new EventEmitter<BlockItem[]>();
 
   blockList: BlockItem[] = [];
   currentBlock: BlockItem;
@@ -25,22 +26,22 @@ export class RecentBlocksComponent implements OnInit {
     this.blocksService.BlockEvent.subscribe(block => {
       this.blockList.push(block);
 
-      console.log(block);
       // Sort the full list to move the highest value to the first place
       this.blockList = this.blockList.sort((a: BlockItem, b: BlockItem) => {
         return b.height - a.height;
       });
 
       if (this.blockList.length > 10) {
-        console.log('LIST', this.blockList);
         this.blockList.pop(); // Remove the last item
       }
+
+      this.refresh.emit(this.blockList);
 
     });
   }
 
   translateTimestamp(timestamp) {
-    return moment(timestamp * 1000).format('MMMM Do YYYY, h:mm:ss a');
+    return moment(timestamp * 1000).format('YYYY-MM-DD, HH:mm:ss');
   }
 
   setCurrentBlock(ev: MouseEvent, block: BlockItem) {

@@ -1,18 +1,18 @@
 <div class="fluid-container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <search-bar></search-bar>
     </div>
   </div>
-</div>  
-<div class="container m-2">
+</div>
+
+  <!-- recent blocks -->
   <div class="row">
-    <div class="col-col-md-5">
-      <recent-blocks (clickNode)="changeCurrentBlock($event)"></recent-blocks>
+    <div class="col-1"></div>
+    <div class="col-10">
+      <price-chart [blockList]="blockList"></price-chart>
+      <recent-blocks (refresh)="getNewBlockList($event)"  (clickNode)="changeCurrentBlock($event)"></recent-blocks>
     </div>
-    <div class="col-md-7">
-      <block-detail [block]="currentBlock"></block-detail>
-    </div>
+    <div class="col-1"></div>
   </div>
 
-</div>
