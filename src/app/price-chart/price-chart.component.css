@@ -1,14 +1,10 @@
-.ct-chart {
-    height: 12rem;
+.price-chart {
+    padding: 1rem;
+    background: #999;
+}
+
+#placeholder {
     width: 100%;
-}
-
-.ct-series-a .ct-line,
-.ct-series-a .ct-point {
-  stroke: blue;
-}
-
-.ct-series-b .ct-line,
-.ct-series-b .ct-point {
-  stroke: green;
+    height: 10rem;
+    background: #999;
 }

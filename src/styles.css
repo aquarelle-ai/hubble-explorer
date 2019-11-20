@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+#chart-tooltip {
+    position: absolute;
+    display: none;
+    border: 1px solid #fdd;
+    padding: 2px;
+    background-color: #fee;
+    opacity: 0.90;
+    z-index: 10000;    
+}
