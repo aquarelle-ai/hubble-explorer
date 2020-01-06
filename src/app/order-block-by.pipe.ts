@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { BlockItem } from './model/block-item';
 
 @Pipe({
   name: 'orderBlockBy',
@@ -7,8 +6,8 @@ import { BlockItem } from './model/block-item';
 })
 export class OrderBlockByPipe implements PipeTransform {
 
-  transform(list: Array<BlockItem>, args?: any): Array<BlockItem> {
-    return list.sort((a: BlockItem, b: BlockItem) => {
+  transform(list: Array<FullBlockItem>, args?: any): Array<FullBlockItem> {
+    return list.sort((a: FullBlockItem, b: FullBlockItem) => {
       return b.height - a.height;
     });
 

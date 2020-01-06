@@ -1,0 +1,35 @@
+
+.block-detail .header {
+}
+
+.block-detail h4, .block-detail h5 {
+}
+
+.block-detail .hash-info {
+    font-size: 1.2rem;
+}
+
+.block-detail .deco-panel {
+    border-right: solid 1px #282828 !important;
+}
+
+.block-detail .exchange-name {
+    font-size: 1rem;
+}
+
+.block-detail .exchange-logo {
+    height: 32px;
+}
+
+.block-detail .evidence-table p {
+  margin:0px !important;
+}
+
+.block-detail .exchange-name {
+    font-size: 1rem;
+}
+
+.block-detail .average-price {
+    font-size: 1.3rem;
+    font-weight: bold;
+}

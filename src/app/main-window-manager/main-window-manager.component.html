@@ -1,17 +1,17 @@
-<div class="fluid-container">
-  <div class="row">
-    <div class="col-12">
-        <price-chart></price-chart>
-        <search-bar></search-bar>
-    </div>
+<search-bar></search-bar>
+<div class="row">
+  <div class="col-md-8">
+    <price-chart></price-chart>
+  </div>
+  <div class="col-md-4">
+    <current-price></current-price>
   </div>
 </div>
 
-  <!-- recent blocks -->
-  <div class="row">
-    <div class="col-9">
-      <recent-blocks (refresh)="getNewBlockList($event)"  (clickNode)="changeCurrentBlock($event)"></recent-blocks>
-    </div>
-    <div class="col-3"></div>
+<!-- recent blocks -->
+<div class="row">
+  <div class="col-12">
+    <recent-blocks (refresh)="getNewBlockList($event)" (clickNode)="changeCurrentBlock($event)"></recent-blocks>
   </div>
-
+</div>
+<!-- end of recent blocks -->

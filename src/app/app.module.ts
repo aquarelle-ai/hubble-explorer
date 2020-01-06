@@ -12,6 +12,8 @@ import { OrderBlockByPipe } from './order-block-by.pipe';
 import { BlockDetailComponent } from './block-detail/block-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PriceChartComponent } from './price-chart/price-chart.component';
+import { AppRoutingModule } from './app-routing.module';
+import { CurrentPriceComponent } from './current-price/current-price.component';
 
 @NgModule({
   declarations: [
@@ -23,10 +25,12 @@ import { PriceChartComponent } from './price-chart/price-chart.component';
     RecentBlocksComponent,
     OrderBlockByPipe,
     BlockDetailComponent,
-    PriceChartComponent
+    PriceChartComponent,
+    CurrentPriceComponent
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     HttpClientModule
   ],
   providers: [

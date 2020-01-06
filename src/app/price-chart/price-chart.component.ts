@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { BlockItem } from '../model/block-item';
 import { ChainListenerService } from '../services/chain-listener.service';
+import { FullBlockItem } from '../model/full-block-item';
 
 
 declare const $: any;
@@ -10,19 +10,21 @@ const CHART_MINUTES = 3;
 const FLOAT_DIVISOR = 10000;
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'price-chart',
   templateUrl: './price-chart.component.html',
   styleUrls: ['./price-chart.component.css']
 })
 export class PriceChartComponent implements OnInit {
 
-  @Output() clickPoint = new EventEmitter()
+  @Output() clickPoint = new EventEmitter();
   private _blockList;
   private _dataItems: number[];
   private _labelItems: number[];
   private _serie;
 
   private plot;
+  latestBlock: FullBlockItem;
 
   /**
    * All the options used by the chart library
@@ -33,7 +35,7 @@ export class PriceChartComponent implements OnInit {
       points: { show: false }
     },
     selection: {
-      mode: "x"
+      mode: 'x'
     },
     grid: {
       hoverable: true,
@@ -56,8 +58,8 @@ export class PriceChartComponent implements OnInit {
   };
 
   constructor(private chainService: ChainListenerService, private changeRef: ChangeDetectorRef) {
-    this._dataItems = Array(CHART_MINUTES * 60).join(0).split('').map(a => parseFloat(a))
-    this._labelItems = Array(CHART_MINUTES * 60).join(0).split('')
+    this._dataItems = Array(CHART_MINUTES * 60).join('0').split('').map(a => parseFloat(a));
+    this._labelItems = Array(CHART_MINUTES * 60).join('0').split('').map(a => parseFloat(a));
   }
 
   ngOnInit() {
@@ -67,26 +69,26 @@ export class PriceChartComponent implements OnInit {
 
   /**
    * Called by the event of chain. Get the new block and redraw the chart
-   * @param block 
    */
-  renderChart(block: BlockItem) {
+  renderChart(block: FullBlockItem) {
+    this.latestBlock = block;
     this._dataItems.shift();
-    this._dataItems.push(block.priceIndex); // To improve the precision
+    this._dataItems.push(block.payload.averagePrice); // To improve the precision
 
     this._labelItems.shift();
     this._labelItems.push(block.timestamp);
     // this._labelItems.push(moment(block.timestamp * 1000).format("YYY-MM-DD HH:mm"));
 
     // Build the series with the expected layout
-    var serie = [];
-    for (var i = 0; i < this._dataItems.length; i++) {
+    const serie = [];
+    for (let i = 0; i < this._dataItems.length; i++) {
       serie.push([i, this._dataItems[i]]);
     }
 
     // Redraw all
-    this.plot = $.plot("#placeholder", [{
+    this.plot = $.plot('#placeholder', [{
       data: serie,
-      label: "Price",
+      label: 'Price',
       lines: { show: true, fill: true }
     }],
       this.chartOptions);
@@ -99,16 +101,16 @@ export class PriceChartComponent implements OnInit {
    */
   weekendAreas(axes) {
 
-    var markings = [],
+    const markings = [],
       d = new Date(axes.xaxis.min);
 
     // go to the first Saturday
-    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7));
     d.setUTCSeconds(0);
     d.setUTCMinutes(0);
     d.setUTCHours(0);
 
-    var i = d.getTime();
+    let i = d.getTime();
 
     // when we don't set yaxis, the rectangle automatically
     // extends to infinity upwards and downwards
@@ -121,24 +123,24 @@ export class PriceChartComponent implements OnInit {
   }
 
   /**
-   * Initialize the canvas and set the events 
+   * Initialize the canvas and set the events
    */
   initializeChart() {
-    this.plot = $.plot("#placeholder", [{
+    this.plot = $.plot('#placeholder', [{
       data: [],
-      label: "Price",
+      label: 'Price',
       lines: { show: true, fill: true }
     }], this.chartOptions);
 
     // Insert a div dynamically into the outest element
     // $("<div id='tooltip'></div>").appendTo("body");
 
-    var el = $("#placeholder");
-    el.bind("plotselected", (event, ranges) => {
+    const el = $('#placeholder');
+    el.bind('plotselected', (event, ranges) => {
 
       // do the zooming
       $.each(this.plot.getXAxes(), function (_, axis) {
-        var opts = axis.options;
+        const opts = axis.options;
         opts.min = ranges.xaxis.from;
         opts.max = ranges.xaxis.to;
       });
@@ -148,39 +150,39 @@ export class PriceChartComponent implements OnInit {
 
       // don't fire event on the overview to prevent eternal loop
 
-      //overview.setSelection(ranges, true);
+      // overview.setSelection(ranges, true);
     });
     // Hovering over the grid
-    el.bind("plothover", (event, pos, item) => {
+    el.bind('plothover', (event, pos, item) => {
 
       if (!pos.x || !pos.y) {
         return;
       }
 
       if (item) {
-        var x = item.datapoint[0], y = item.datapoint[1].toFixed(5);
+        const x = item.datapoint[0], y = item.datapoint[1].toFixed(5);
         if (y > 0) {
-          var timeLabel = moment(this._labelItems[x] * 1000).format('YYYY-MM-DD, HH:mm:ss')
-          var tooltipText = item.series.label + ": <strong>" + y + "</strong> at " + timeLabel;
+          const timeLabel = moment(this._labelItems[x] * 1000).format('YYYY-MM-DD, HH:mm:ss');
+          const tooltipText = item.series.label + ': <strong>' + y + '</strong> at ' + timeLabel;
 
-          $("#chart-tooltip").html(tooltipText)
+          $('#chart-tooltip').html(tooltipText)
             .css({ top: item.pageY + 5, left: item.pageX + 5 })
             .fadeIn(100);
         } else {
-          $("#chart-tooltip").hide();
+          $('#chart-tooltip').hide();
         }
       } else {
-        $("#chart-tooltip").hide();
+        $('#chart-tooltip').hide();
       }
     });
 
-    // When the mouse is moved, the tooltips will hide 
-    el.bind("plothovercleanup", (event, pos, item) => {
-      $("#chart-tooltip").hide();
+    // When the mouse is moved, the tooltips will hide
+    el.bind('plothovercleanup', (event, pos, item) => {
+      $('#chart-tooltip').hide();
     });
 
     // Click on the grid
-    el.bind("plotclick", (event, pos, item) => {
+    el.bind('plotclick', (event, pos, item) => {
       if (item) {
         this.plot.highlight(item.series, item.datapoint);
         console.log(item);

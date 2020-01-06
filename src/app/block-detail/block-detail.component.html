@@ -1,15 +1,86 @@
-<div class="block-detail" *ngIf="fullBlock">
+<search-bar></search-bar>
 
-  <h3>Block:  # {{ fullBlock.height }}</h3>
-  <h4>{{ fullBlock.hash }}</h4>
-  <p><a href="#" (click)="moveToPrevious ($event, fullBlock)">Previous block</a> </p>
-  <table class="table">
-    <tbody>
-      <tr *ngFor="let evidence of fullBlock.evidence">
-        <td>{{ evidence.name }}</td>
-        <td>{{ evidence.volume }}</td>
-        <td>{{ evidence.dataUrl }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<div class="block-detail container-fluid" *ngIf="fullBlock">
+
+  <!-- Header -->
+  <div class="row text-center">
+    <div class="col-md-12 mt-3">
+      <h5>Block: #{{ fullBlock.height }} <button class="ml-3 btn btn-info"><i class="fas fa-stamp"></i> Generate certificate</button></h5>
+    </div>
+  </div>
+  <!-- hash and buttons -->
+  <div class="row">
+    <div class="col-md-2">
+      <button (click)="moveToPrevious($event)" class="btn btn-primary"><i class="fas fa-chevron-left"></i> Previous
+        block</button>
+    </div>
+    <div class="col-md-8 text-center hash-info">
+      <p>Hash: <span class="badge badge-secondary">{{ fullBlock.hash }}</span></p>
+    </div>
+    <div class="col-md-2">
+      <button (click)="moveToNext($event)" class="btn btn-primary pull-right">Next block <i
+          class="fas fa-chevron-right"></i></button>
+    </div>
+    <!-- end hash and buttons -->
+
+  </div>
+  <!-- end of header -->
+
+  <div class="row mb-3">
+    <div class="col-md-3"></div>
+
+    <!-- Stored price -->
+    <div class="col-md-2 text-center deco-panel">
+      <h6 class="text-success"><i class="fas fa-dollar-sign"></i> Average Price</h6>
+      <p class="average-price text-danger">{{ fullBlock.payload?.averagePrice?.toFixed(5) }}</p>
+    </div>
+    <!--end of Stored price -->
+
+    <!-- Volume -->
+    <div class="col-md-2 text-center deco-panel">
+      <h6 class="text-success"><i class="far fa-clock"></i> Volume</h6>
+      <p>{{ fullBlock.payload?.volume }}</p>
+    </div>
+    <!-- end of Volume -->
+
+    <!-- Time -->
+    <div class="col-md-2 text-center deco-panel">
+      <h6 class="text-success"><i class="far fa-clock"></i> Time</h6>
+      <p>{{ getFullTime (fullBlock.payload?.timestamp ) }}</p>
+    </div>
+    <!-- end of Time -->
+
+    <!-- Evidence -->
+    <div class="col-md-2 text-center">
+      <h6 class="text-success"><i class="fas fa-balance-scale"></i> Evidences</h6>
+      <p>{{  fullBlock.evidence ? fullBlock.evidence.length : "No evidences"}}</p>
+    </div>
+    <!-- end of Evidence -->
+
+    <div class="col-md-3"></div>
+
+  </div>
+
+  <div class="row" *ngIf="fullBlock.evidence">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <h5>Evidence</h5>
+      <table class="table evidence-table">
+        <tbody>
+          <tr *ngFor="let evidence of fullBlock.evidence">
+            <td style="width: 5%"><img [src]="'assets/images/' + evidence.exchange + '.png'" class="exchange-logo">
+            </td>
+            <td>
+              <p class="exchange-name text-warning">{{ evidence.exchange }}</p>
+              <p><i class="far fa-clock"></i> {{ getFullTime (evidence.timestamp ) }}</p>
+              <p><strong>$ {{ evidence.bids | json }}</strong></p>
+              <hr/>
+              <p><strong>$ {{ evidence.asks | json }}</strong></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-2"></div>
+
+  </div>

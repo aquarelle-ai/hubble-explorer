@@ -1,10 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ChainListenerService } from '../services/chain-listener.service';
-import { BlockItem } from '../model/block-item';
+import { FullBlockItem } from '../model/full-block-item';
 
 declare const moment: any;
 
 
+const TABLE_MAX_ROWS = 15;
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'recent-blocks',
@@ -13,30 +14,52 @@ declare const moment: any;
 })
 export class RecentBlocksComponent implements OnInit {
 
-  @Output() clickNode = new EventEmitter<BlockItem>();
-  @Output() refresh = new EventEmitter<BlockItem[]>();
+  @Output() clickNode = new EventEmitter<FullBlockItem>();
+  @Output() refresh = new EventEmitter<FullBlockItem[]>();
 
-  blockList: BlockItem[] = [];
-  currentBlock: BlockItem;
+  blockList: FullBlockItem[] = [];
+  currentBlock: FullBlockItem;
 
-  constructor(private blocksService: ChainListenerService) { }
+  constructor(private chainService: ChainListenerService) { }
 
   ngOnInit() {
-
-    this.blocksService.BlockEvent.subscribe(block => {
+    // Websocket subscription
+    this.chainService.BlockEvent.subscribe(block => {
       this.blockList.push(block);
 
       // Sort the full list to move the highest value to the first place
-      this.blockList = this.blockList.sort((a: BlockItem, b: BlockItem) => {
+      this.blockList = this.blockList.sort((a: FullBlockItem, b: FullBlockItem) => {
         return b.height - a.height;
       });
 
-      if (this.blockList.length > 10) {
+      if (this.blockList.length > TABLE_MAX_ROWS) {
         this.blockList.pop(); // Remove the last item
       }
 
       this.refresh.emit(this.blockList);
+    });
 
+    // Note: this code will be applied in the future, to show the latest blocks
+    this.ReadLatest();
+  }
+
+  /**
+   * Get the latest blocks
+   */
+  private ReadLatest() {
+    this.chainService.getLatestBlocks(Date.now() * 1000).subscribe((response: FullBlockItem[]) => {
+      // convert them into light blocks
+      this.blockList = []
+      response.forEach(block => {
+        const newLigthBlock = <FullBlockItem>{
+          hash: block.hash,
+          height: block.height,
+          timestamp: block.timestamp,
+          priceIndex: block.payload.averagePrice,
+          confirmations: block.evidence.length
+        };
+        this.blockList.push(newLigthBlock);
+      });
     });
   }
 
@@ -44,7 +67,7 @@ export class RecentBlocksComponent implements OnInit {
     return moment(timestamp * 1000).format('YYYY-MM-DD, HH:mm:ss');
   }
 
-  setCurrentBlock(ev: MouseEvent, block: BlockItem) {
+  setCurrentBlock(ev: MouseEvent, block: FullBlockItem) {
     ev.preventDefault();
 
     this.currentBlock = block;

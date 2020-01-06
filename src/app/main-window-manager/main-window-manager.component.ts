@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { BlockItem } from '../model/block-item';
 
 @Component({
   selector: 'main-window-manager',
@@ -9,19 +8,19 @@ import { BlockItem } from '../model/block-item';
 export class MainWindowManagerComponent implements OnInit {
 
   
-  currentBlock: BlockItem;
-  blockList: BlockItem[];
+  currentBlock: FullBlockItem;
+  blockList: FullBlockItem[];
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  changeCurrentBlock(newBlock : BlockItem) {
+  changeCurrentBlock(newBlock : FullBlockItem) {
     this.currentBlock = newBlock;
   }
 
-  getNewBlockList(newBlockList : BlockItem[]) {
+  getNewBlockList(newBlockList : FullBlockItem[]) {
     this.blockList = newBlockList;
   }
 
