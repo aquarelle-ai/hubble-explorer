@@ -49,17 +49,7 @@ export class RecentBlocksComponent implements OnInit {
   private ReadLatest() {
     this.chainService.getLatestBlocks(Date.now() * 1000).subscribe((response: FullBlockItem[]) => {
       // convert them into light blocks
-      this.blockList = []
-      response.forEach(block => {
-        const newLigthBlock = <FullBlockItem>{
-          hash: block.hash,
-          height: block.height,
-          timestamp: block.timestamp,
-          priceIndex: block.payload.averagePrice,
-          confirmations: block.evidence.length
-        };
-        this.blockList.push(newLigthBlock);
-      });
+      this.blockList = response;
     });
   }
 

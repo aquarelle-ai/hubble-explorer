@@ -1,8 +1,8 @@
-<div class="price-chart">
+<div class="price-chart" >
   <div class="section-header">
     <h5 class="text-info">
       <i class="fab fa-bitcoin"></i> Bitcoin Global Average Price
-      <span class="text-secondary"><strong>{{ latestBlock.priceIndex.toFixed(2) }}</strong></span>
+      <span class="text-secondary"><strong>{{ latestBlock?.payload.averagePrice.toFixed(2) }} USD</strong></span>
     </h5>
   </div>
   <div id="placeholder"></div>

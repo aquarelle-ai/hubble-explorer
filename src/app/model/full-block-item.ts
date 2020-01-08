@@ -11,4 +11,6 @@ export class FullBlockItem {
 
 export class BlockPayload {
     averagePrice: number;
+    timestamp: number;
+    volume: number;
 }

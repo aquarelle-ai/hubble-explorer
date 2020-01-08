@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { ChainListenerService } from '../services/chain-listener.service';
 import { FullBlockItem } from '../model/full-block-item';
+import { platformCoreDynamic } from '@angular/platform-browser-dynamic/src/platform_core_dynamic';
 
 
 declare const $: any;
@@ -17,13 +18,15 @@ const FLOAT_DIVISOR = 10000;
 })
 export class PriceChartComponent implements OnInit {
 
-  @Output() clickPoint = new EventEmitter();
   private _blockList;
-  private _dataItems: number[];
+  private _dataItems: number[0];
   private _labelItems: number[];
   private _serie;
-
   private plot;
+  // Used to coordinate the chart with the graphics
+  private chartReady = false;
+
+  @Output() clickPoint = new EventEmitter();
   latestBlock: FullBlockItem;
 
   /**
@@ -34,27 +37,48 @@ export class PriceChartComponent implements OnInit {
       lines: { show: true },
       points: { show: false }
     },
-    selection: {
-      mode: 'x'
-    },
+    // selection: {
+    //   mode: 'x'
+    // },
     grid: {
-      hoverable: true,
-      clickable: true,
-      markings: this.weekendAreas
+      // hoverable: true,
+      // clickable: true,
+      // markings: this.weekendAreas
     },
-    // xaxis: {
-    //   mode: "time",
-    //   timeBase: "miliseconds",
-    //   tickLength: 1,
-    //   gridLines: false
-    // },
-    // zoom: {
-    // 	interactive: true
-    // },
+    yaxis: {
+      tickFormatter: (t) => (t).toFixed(0),
+      tickSize: 100,
+      tickLength: 10,
+      tickDecimals: 2,
+      axisLabel: 'Price',
+      showTickLabels: 'all',
+      showTicks: false,
+      showMinorTicks: false,
+      position: 'right',
+      gridLines: false,
+
+      min: undefined,
+      max: undefined,
+      autoScale: 'exact',
+      autoScaleMargin: null,
+      growOnly: true
+    },
+    zoom: {
+      // interactive: true
+    },
+    xaxis: {
+      mode: 'time',
+      timeBase: 'seconds',
+      showTicks: true,
+      showMinorTicks: true,
+      tickLength: 1,
+      gridLines: true
+    },
     pan: {
       interactive: true,
-      enableTouch: true
-    }
+      // enableTouch: true
+    },
+    threshold: 0
   };
 
   constructor(private chainService: ChainListenerService, private changeRef: ChangeDetectorRef) {
@@ -63,8 +87,90 @@ export class PriceChartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initializeChart();
+    let hInterval;
+
     this.chainService.BlockEvent.subscribe(block => this.renderChart(block));
+    window.addEventListener('load', () => {
+      console.log('El documento está listo');
+
+      // Check at 100ms to validate the existence of data and the element
+        hInterval = setInterval(() => {
+          if (this.latestBlock) {
+            clearInterval( hInterval);
+            this.chartReady = true;
+            console.log ('Ya se puede mostrar todo');
+            this.initializeChart();
+        }
+      }, 500);
+    });
+  }
+
+  /**
+ * Initialize the canvas and set the events
+ */
+  initializeChart() {
+    this.chartOptions.yaxis.min = parseFloat((this.latestBlock.payload.averagePrice / 10.0).toFixed(0)) * 10 - 50;
+    this.plot = $.plot('#placeholder', [{
+      data: [],
+      lines: { show: true, fill: true }
+    }], this.chartOptions);
+
+    // Insert a div dynamically into the outest element
+    // $("<div id='tooltip'></div>").appendTo("body");
+
+    // const el = $('#placeholder');
+    // el.bind('plotselected', (event, ranges) => {
+
+    //   // do the zooming
+    //   $.each(this.plot.getXAxes(), function (_, axis) {
+    //     const opts = axis.options;
+    //     opts.min = ranges.xaxis.from;
+    //     opts.max = ranges.xaxis.to;
+    //   });
+    //   this.plot.setupGrid();
+    //   this.plot.draw();
+    //   this.plot.clearSelection();
+
+    //   // don't fire event on the overview to prevent eternal loop
+
+    //   // overview.setSelection(ranges, true);
+    // });
+    // // Hovering over the grid
+    // el.bind('plothover', (event, pos, item) => {
+
+    //   if (!pos.x || !pos.y) {
+    //     return;
+    //   }
+
+    //   if (item) {
+    //     const x = item.datapoint[0], y = item.datapoint[1].toFixed(5);
+    //     if (y > 0) {
+    //       const timeLabel = moment(this._labelItems[x] * 1000).format('YYYY-MM-DD, HH:mm:ss');
+    //       const tooltipText = item.series.label + ': <strong>' + y + '</strong> at ' + timeLabel;
+
+    //       $('#chart-tooltip').html(tooltipText)
+    //         .css({ top: item.pageY + 5, left: item.pageX + 5 })
+    //         .fadeIn(100);
+    //     } else {
+    //       $('#chart-tooltip').hide();
+    //     }
+    //   } else {
+    //     $('#chart-tooltip').hide();
+    //   }
+    // });
+
+    // // When the mouse is moved, the tooltips will hide
+    // el.bind('plothovercleanup', (event, pos, item) => {
+    //   $('#chart-tooltip').hide();
+    // });
+
+    // // Click on the grid
+    // el.bind('plotclick', (event, pos, item) => {
+    //   if (item) {
+    //     this.plot.highlight(item.series, item.datapoint);
+    //     console.log(item);
+    //   }
+    // });
   }
 
   /**
@@ -85,15 +191,20 @@ export class PriceChartComponent implements OnInit {
       serie.push([i, this._dataItems[i]]);
     }
 
-    // Redraw all
-    this.plot = $.plot('#placeholder', [{
-      data: serie,
-      label: 'Price',
-      lines: { show: true, fill: true }
-    }],
-      this.chartOptions);
+    if (this.plot) {
 
-    this.changeRef.markForCheck();
+      this.plot.setData([{
+        data: serie,
+        lines: { show: true, fill: true }
+      }]);
+
+      const yaxes = this.plot.getAxes().yaxis;
+
+      this.plot.setupGrid(true);
+      this.plot.draw();
+
+      this.changeRef.markForCheck();
+    }
   }
 
   /**
@@ -122,72 +233,5 @@ export class PriceChartComponent implements OnInit {
     return markings;
   }
 
-  /**
-   * Initialize the canvas and set the events
-   */
-  initializeChart() {
-    this.plot = $.plot('#placeholder', [{
-      data: [],
-      label: 'Price',
-      lines: { show: true, fill: true }
-    }], this.chartOptions);
-
-    // Insert a div dynamically into the outest element
-    // $("<div id='tooltip'></div>").appendTo("body");
-
-    const el = $('#placeholder');
-    el.bind('plotselected', (event, ranges) => {
-
-      // do the zooming
-      $.each(this.plot.getXAxes(), function (_, axis) {
-        const opts = axis.options;
-        opts.min = ranges.xaxis.from;
-        opts.max = ranges.xaxis.to;
-      });
-      this.plot.setupGrid();
-      this.plot.draw();
-      this.plot.clearSelection();
-
-      // don't fire event on the overview to prevent eternal loop
-
-      // overview.setSelection(ranges, true);
-    });
-    // Hovering over the grid
-    el.bind('plothover', (event, pos, item) => {
-
-      if (!pos.x || !pos.y) {
-        return;
-      }
-
-      if (item) {
-        const x = item.datapoint[0], y = item.datapoint[1].toFixed(5);
-        if (y > 0) {
-          const timeLabel = moment(this._labelItems[x] * 1000).format('YYYY-MM-DD, HH:mm:ss');
-          const tooltipText = item.series.label + ': <strong>' + y + '</strong> at ' + timeLabel;
-
-          $('#chart-tooltip').html(tooltipText)
-            .css({ top: item.pageY + 5, left: item.pageX + 5 })
-            .fadeIn(100);
-        } else {
-          $('#chart-tooltip').hide();
-        }
-      } else {
-        $('#chart-tooltip').hide();
-      }
-    });
-
-    // When the mouse is moved, the tooltips will hide
-    el.bind('plothovercleanup', (event, pos, item) => {
-      $('#chart-tooltip').hide();
-    });
-
-    // Click on the grid
-    el.bind('plotclick', (event, pos, item) => {
-      if (item) {
-        this.plot.highlight(item.series, item.datapoint);
-        console.log(item);
-      }
-    });
-  }
 
 }

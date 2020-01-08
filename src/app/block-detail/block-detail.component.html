@@ -73,9 +73,12 @@
             <td>
               <p class="exchange-name text-warning">{{ evidence.exchange }}</p>
               <p><i class="far fa-clock"></i> {{ getFullTime (evidence.timestamp ) }}</p>
-              <p><strong>$ {{ evidence.bids | json }}</strong></p>
-              <hr/>
-              <p><strong>$ {{ evidence.asks | json }}</strong></p>
+              <div *ngIf="evidence.bids">
+                <strong class="text-primary">Bids</strong> {{ evidence.bids | json }}
+              </div>
+              <div *ngIf="evidence.asks">
+                <strong class="text-primary">Asks</strong> {{ evidence.asks | json }}
+              </div>
             </td>
           </tr>
         </tbody>

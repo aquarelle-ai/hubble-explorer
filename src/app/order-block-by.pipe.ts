@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { FullBlockItem } from './model/full-block-item';
 
 @Pipe({
   name: 'orderBlockBy',
